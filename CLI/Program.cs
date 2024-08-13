@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using UELib.Engine.Classes;
 
 namespace UELib.CLI
 {
@@ -132,6 +134,22 @@ namespace UELib.CLI
                             obj.BeginDeserializing();
                             string output = obj.Decompile();
                             Console.WriteLine(output);
+                            break;
+                        }
+
+                        case "shadermap":
+                        {
+                            string objectPath = cmdArgs.Length > 4 ? cmdArgs[2] : "unspecified";
+                            var obj = (UShaderCache)pkg.FindObjectByGroup(objectPath);
+                            if (obj == null)
+                            {
+                                Console.Error.WriteLine("Couldn't find object by path '{0}'", objectPath);
+                                break;
+                            }
+
+                            obj.BeginDeserializing();
+                            string output = obj.DecompileShaderMap(cmdArgs[3]);
+                            File.WriteAllText(cmdArgs[4], output);
                             break;
                         }
 

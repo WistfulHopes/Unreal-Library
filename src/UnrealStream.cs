@@ -876,6 +876,17 @@ namespace UELib
             }
         }
         
+        public static void ReadArray(this IUnrealStream stream, out UArray<ushort> array)
+        {
+            int c = stream.ReadLength();
+            array = new UArray<ushort>(c);
+            for (int i = 0; i < c; ++i)
+            {
+                stream.Read(out ushort element);
+                array.Add(element);
+            }
+        }
+
         public static void ReadArray(this IUnrealStream stream, out UArray<int> array)
         {
             int c = stream.ReadLength();
