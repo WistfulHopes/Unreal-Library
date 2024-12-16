@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+using UELib.Branch;
 using UELib.ObjectModel.Annotations;
 using UELib.Tokens;
 
@@ -73,8 +73,8 @@ namespace UELib.Core
 
                 private void RemapCastToken(IUnrealArchive stream)
                 {
-                    if (stream.Version >= VInterfaceClass) return;
-                    
+                    if (stream.Version >= (uint)PackageObjectLegacyVersion.AddedInterfacesFeature) return;
+
                     // TODO: Could there be more?
                     switch (CastOpCode)
                     {
@@ -83,7 +83,7 @@ namespace UELib.Core
                             break;
                     }
                 }
-                
+
                 public override void Deserialize(IUnrealStream stream)
                 {
                     DeserializeCastToken(stream);
@@ -121,7 +121,30 @@ namespace UELib.Core
                             }
                         }
 #endif
+#if MASS_EFFECT
+                        if (Package.Build == BuildGeneration.SFX)
+                        {
+                            switch ((uint)CastOpCode)
+                            {
+                                // StringRefToInt
+                                case 0x5B:
+                                    castTypeName = "int";
+                                    break;
+
+                                // StringRefToString
+                                case 0x5C:
+                                    castTypeName = "string";
+                                    break;
+
+                                // IntToStringRef
+                                case 0x5D:
+                                    castTypeName = "strref";
+                                    break;
+                            }
+                        }
+#endif
                     }
+
                     Debug.Assert(castTypeName != default, $"Detected an unresolved token '0x{CastOpCode:X}'.");
                     return $"{castTypeName}({DecompileNext()})";
                 }

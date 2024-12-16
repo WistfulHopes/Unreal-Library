@@ -57,6 +57,11 @@ namespace UELib.Core
         [CanBeNull]
         public UObject Outer => Package.GetIndexObject(Table.OuterIndex);
 
+        [CanBeNull]
+        public UObject Archetype => ExportTable != null
+            ? Package.GetIndexObject(ExportTable.ArchetypeIndex)
+            : null;
+
         /// <summary>
         /// The object's index represented as a table index.
         /// </summary>
@@ -171,7 +176,7 @@ namespace UELib.Core
                 DeserializationState |= ObjectState.Errorlized;
 
                 Console.Error.WriteLine($"\r\n> Object deserialization error for {GetReferencePath()} as {GetType()}" +
-                                  $"\r\n> Exception: {ThrownException}");
+                                        $"\r\n> Exception: {ThrownException}");
             }
             finally
             {
@@ -190,7 +195,8 @@ namespace UELib.Core
 
             // Bypass the terrible and slow endian reverse call
             int read = Package.Stream.EndianAgnosticRead(buffer, 0, ExportTable.SerialSize);
-            Contract.Assert(ExportTable.SerialOffset + ExportTable.SerialSize <= Package.Stream.Length, "Exceeded file's length");
+            Contract.Assert(ExportTable.SerialOffset + ExportTable.SerialSize <= Package.Stream.Length,
+                "Exceeded file's length");
             //Debug.Assert(read == ExportTable.SerialSize, $"Incomplete read; expected a total bytes of {ExportTable.SerialSize} but got {read}");
         }
 
@@ -252,7 +258,7 @@ namespace UELib.Core
                 return;
             }
 #endif
-            if (_Buffer.Version < (uint)PackageObjectLegacyVersion.NetObjectsAdded ||
+            if (_Buffer.Version < (uint)PackageObjectLegacyVersion.NetObjectCountAdded ||
                 _Buffer.UE4Version >= 196)
             {
                 return;
@@ -306,6 +312,7 @@ namespace UELib.Core
                     if (header.Item2 == 2)
                     {
                         _Buffer.ReadInt32();
+                        _Buffer.ConformRecordPosition();
                     }
                 }
             }
@@ -314,6 +321,7 @@ namespace UELib.Core
             if (HasObjectFlag(ObjectFlagsLO.HasStack))
             {
                 _Buffer.ReadClass(out StateFrame);
+                Record(nameof(StateFrame), StateFrame);
             }
 #if MKKE || BATMAN
             if (Package.Build == UnrealPackage.GameBuild.BuildName.MKKE ||
@@ -333,15 +341,32 @@ namespace UELib.Core
 
                     // HACK: Ugly work around for unregistered component classes...
                     // Simply for checking for the parent's class is not reliable without importing objects.
-                    case UnknownObject _ when _Buffer.Length >= 12 && IsTemplate():
+                    case UnknownObject _ when _Buffer.Length >= 12 && Archetype != null && IsTemplate():
                         {
+                            long backupPosition = _Buffer.Position;
+                            
                             var fakeComponent = new UComponent();
-                            DeserializeTemplate(fakeComponent);
+                            try
+                            {
+                                DeserializeTemplate(fakeComponent);
+                            }
+                            catch (InvalidCastException exception)
+                            {
+                                Console.Error.WriteLine("Failed attempt to interpret object as a template {0}",
+                                    exception);
+
+                                _Buffer.Position = backupPosition;
+                                _Buffer.ConformRecordPosition();
+
+                                // ISSUE: If the above recorded any data, the data will not be undone.
+                            }
+
                             break;
                         }
                 }
             }
-            skipNetIndex:
+
+        skipNetIndex:
 
             DeserializeNetIndex();
 #if THIEF_DS || DEUSEX_IW

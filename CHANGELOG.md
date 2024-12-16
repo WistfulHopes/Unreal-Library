@@ -1,13 +1,54 @@
-# [1.5.1](https://github.com/EliotVU/Unreal-Library/releases/tag/1.5.1)
+#
+
+## [1.8.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.8.0)
+
+* 89401543 Support for Stranglehold
+* 6c89b66a Improved support for Batman series
+* 4222595f Improved support for Borderlands: GOTYE
+* 6c89b66a Fixed bad decompilation of intrinsic array function calls under certain circumstances.
+* 8ba153b3 Fixed missing ')' in a replication statement
+* 3eab0cba #92 Fixed issue with overriding a class type when initializing a package.
+
+## [1.7.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.7.0)
+
+* 0ff0ed96 Added .NET Standard 2.1 and .NET 8.0 as framework targets.
+* 48b427f1 Support for Mass Effect: Legendary Edition
+* 83c7ecfe Support for Men of Valor
+* a226a6c7 Support for Tom Clancy's Splinter Cell: Double Agent (Offline Mode)
+* 660c0c28 Support for Stargate SG-1: The Alliance
+* 1dd24dc5 Improved support for Frontlines: Fuel of War
+
+## [1.6.1](https://github.com/EliotVU/Unreal-Library/releases/tag/1.6.1)
+
+* Added .NET Standard 2.0 as a target framework, when targeting this standard any code releated to WinForms will be excluded (This will be deprecated in its entirety with UELib 2.0)
+* Added a comment to enum tags to display its value.
+* Fixed the decompilation output of an element access expression (in a T3D context) for UE1 based games: Changed `Element[0]=Value` to `Element(0)=Value`
+
+## [1.6.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.6.0)
+
+Notable changes:
+
+* 5ef6d04a Support for Tom Clancy's EndWar
+* cbbfff3e Support for Gigantic: Rampage Edition (thanks to @HyenaCoding)
+* 139254a9 Support for Borderlands: Game of the Year Enhanced; and fixed regression #55 of Borderlands and Battleborn.
+* 98dbf0bf Improved support for Duke Nukem Forever (thanks to @DaZombieKiller)
+* 88a5b619 Improved support for Rocket League #54
+* 8e3053c7 Fixed regression [Batman series support](https://github.com/UE-Explorer/UE-Explorer/issues/63)
+
+* d04d8b13 Fixed fallback for deprecated ClassName so that "UE Explorer" can pickup content again.
+* 5ac20221 Fixed #36; various T3D archetype fixes.
+* 84b46eed Fixed T3D syntax ouput from "object end" to "end object"
+
+## [1.5.1](https://github.com/EliotVU/Unreal-Library/releases/tag/1.5.1)
 
 * Fixed regression #74; The deprecated `UnrealConfig.CookedPlatform` field was ignored, which is still relevant for legacy-code.
 * Updated auto-detected builds for Infinity Blade's series
 
-# [1.5.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.5.0)
+## [1.5.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.5.0)
 
 * 1ef135d Improved support for A Hat in Time (UE3), contributed by @Un-Drew
 
-# [1.4.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.4.0)
+## [1.4.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.4.0)
 
 Notable changes that affect UnrealScript output:
 
@@ -48,7 +89,7 @@ Notable changes that affect various data structures:
 
 **Support for the data types listed above have only been implemented for the standard structure that Epic Games uses**
 
-# [1.3.1](https://github.com/EliotVU/Unreal-Library/releases/tag/1.3.1)
+## [1.3.1](https://github.com/EliotVU/Unreal-Library/releases/tag/1.3.1)
 
 Notable changes back-ported from 'develop' version 1.4.0:
 
@@ -62,7 +103,7 @@ Notable changes back-ported from 'develop' version 1.4.0:
 
 * 42783b16 Added the capability to override the interpreted version for packages of builds that are auto-detected.
 
-# [1.3.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.3.0.0)
+## [1.3.0](https://github.com/EliotVU/Unreal-Library/releases/tag/1.3.0.0)
 
 Notable changes:
 

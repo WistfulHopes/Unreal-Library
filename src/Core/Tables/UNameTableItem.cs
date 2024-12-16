@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UELib.Branch;
 
 namespace UELib
 {
@@ -15,14 +16,14 @@ namespace UELib
             get => _Name;
             set => _Name = value;
         }
-        private string _Name;
+        internal string _Name;
 
         public ulong Flags
         {
             get => _Flags;
             set => _Flags = value;
         }
-        private ulong _Flags;
+        internal ulong _Flags;
 
         public ushort NonCasePreservingHash;
         public ushort CasePreservingHash;
@@ -40,7 +41,7 @@ namespace UELib
                 return;
             }
 #endif
-            _Flags = stream.Version >= UExportTableItem.VObjectFlagsToULONG
+            _Flags = stream.Version >= (uint)PackageObjectLegacyVersion.ObjectFlagsSizeExpandedTo64Bits
                 ? stream.ReadUInt64()
                 : stream.ReadUInt32();
         }
@@ -50,15 +51,15 @@ namespace UELib
         {
 #if UE1
             // Very old packages use a simple Ansi encoding.
-            if (stream.Version < UnrealPackage.VSIZEPREFIXDEPRECATED) return stream.ReadAnsiNullString();
+            if (stream.Version < (uint)PackageObjectLegacyVersion.Release64) return stream.ReadAnsiNullString();
 #endif
-            return stream.ReadText();
+            return stream.ReadString();
         }
 
         public void Serialize(IUnrealStream stream)
         {
             stream.Write(_Name);
-            if (stream.Version < UExportTableItem.VObjectFlagsToULONG)
+            if (stream.Version < (uint)PackageObjectLegacyVersion.ObjectFlagsSizeExpandedTo64Bits)
                 // Writing UINT
                 stream.Write((uint)_Flags);
             else
